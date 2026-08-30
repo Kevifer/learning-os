@@ -39,3 +39,13 @@ def create_goal(goal: GoalCreate, db: Session = Depends(get_db)):
     db.refresh(new_goal)
 
     return new_goal
+
+
+@app.get("/goals")
+def get_goals(db: Session = Depends(get_db)):
+    return db.query(Goal).all()
+
+
+@app.get("/goals/{goal_id}")
+def get_goal_by_id(goal_id: int, db: Session = Depends(get_db)):
+    return db.query(Goal).filter(Goal.id == goal_id).first()
