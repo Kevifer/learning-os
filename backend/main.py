@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from database import Base, engine, SessionLocal
-from models import Goal
-from schemas import GoalCreate
+from models import Goal, Task
+from schemas import GoalCreate, TaskCreate
+
 
 app = FastAPI(title="Learning OS")
 
@@ -57,3 +58,18 @@ def get_goals(search: str | None = None, db: Session = Depends(get_db)):
 @app.get("/goals/{goal_id}")
 def get_goal_by_id(goal_id: int, db: Session = Depends(get_db)):
     return db.query(Goal).filter(Goal.id == goal_id).first()
+
+
+@app.post("/goals/{goal_id}/tasks")
+def create_task(goal_id: int, task: TaskCreate, db: Session = Depends(get_db)):
+    new_task = Task(
+        title=task.title,
+        description=task.description,
+        goal_id=goal_id
+    )
+    
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+    
+    return new_task
