@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine, SessionLocal
 from models import Goal, Task
@@ -8,6 +9,13 @@ from schemas import GoalCreate, TaskCreate
 
 
 app = FastAPI(title="Learning OS")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 Base.metadata.create_all(bind=engine)
@@ -73,3 +81,15 @@ def create_task(goal_id: int, task: TaskCreate, db: Session = Depends(get_db)):
     db.refresh(new_task)
     
     return new_task
+
+@app.get("/tasks")
+def get_tasks(search: str | None = None, db: Session = Depends(get_db)):
+    if search:
+       return db.query(Task).filter(
+       or_(
+             Task.title.like(f"%{search}%"),
+             Task.description.like(f"%{search}%")
+       )
+       ).all()
+    else:
+        return db.query(Task).all()

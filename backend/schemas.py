@@ -6,5 +6,5 @@ class GoalCreate(BaseModel):
     description: str | None = None
 
 class TaskCreate(BaseModel):
-    name: str
+    title: str
     description: str | None = None
