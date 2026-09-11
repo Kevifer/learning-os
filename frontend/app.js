@@ -19,4 +19,16 @@ async function loadGoals() {
     });
 }
 
+    const goalForm = document.getElementById("goal-form");
+
+
+    goalForm.addEventListener("submit", async event => {
+
+      event.preventDefault();
+        const name = document.getElementById("goal-name").value;
+        const description = document.getElementById("goal-description").value;
+
+    });
+
 loadGoals();
+	
